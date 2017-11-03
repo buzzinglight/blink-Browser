@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Browser</class>
+ <widget class="QMainWindow" name="Browser">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Browser</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#widget {
+	background:		black;
+}
+QPushButton#home, QPushButton#back, QPushButton#print {
+	background:		white;
+	border:				1px solid black;
+	padding:			12px;
+	border-radius:	7px;
+}
+QPushButton#home:hover, QPushButton#back:hover, QPushButton#print:hover {
+	background:		#DA3844;
+}
+QLabel#url {
+	color:				#606060;
+}</string>
+  </property>
+  <widget class="QWidget" name="widget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="layout" stretch="0,1">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="toolbar">
+        <item>
+         <widget class="QPushButton" name="back">
+          <property name="text">
+           <string>  Retour</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icono/Ressources.qrc">
+            <normaloff>:/icons/back.png</normaloff>:/icons/back.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="backSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="home">
+          <property name="text">
+           <string>  Accueil</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icono/Ressources.qrc">
+            <normaloff>:/icons/maison</normaloff>:/icons/maison</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="homeSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="print">
+          <property name="text">
+           <string>  Imprimer</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icono/Ressources.qrc">
+            <normaloff>:/icons/print.png</normaloff>:/icons/print.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="printSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="url">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="urlSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QWebEngineView" name="web" native="true"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header>qwebengineview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icono/Ressources.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>back</sender>
+   <signal>released()</signal>
+   <receiver>Browser</receiver>
+   <slot>action()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>58</x>
+     <y>19</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>806</x>
+     <y>156</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>home</sender>
+   <signal>released()</signal>
+   <receiver>Browser</receiver>
+   <slot>action()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>17</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>869</x>
+     <y>191</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>print</sender>
+   <signal>released()</signal>
+   <receiver>Browser</receiver>
+   <slot>action()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>365</x>
+     <y>16</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>746</x>
+     <y>136</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>action()</slot>
+ </slots>
+</ui>
