@@ -5,6 +5,8 @@ Browser::Browser(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Browser) {
     ui->setupUi(this);
+    ui->print->hide();
+    ui->web->setContextMenuPolicy(Qt::NoContextMenu);
 
     //Chemin de l’app
     QDir pathApplicationDir = QDir(QCoreApplication::applicationDirPath()).absolutePath();
@@ -37,8 +39,9 @@ Browser::Browser(QWidget *parent) :
 
         settings.beginGroup("config");
         home = settings.value("home", "https://www.buzzinglight.com").toString().trimmed();
+        quint8 buttonBar = settings.value("buttonbar", 1).toInt();
         eventEater = new EventEater(settings.value("timeout", -1).toInt());
-        installEventFilter(eventEater);
+        ui->web->installEventFilter(eventEater);
         if(eventEater->timeout > 0)
             startTimer(1000);
         settings.endGroup();
@@ -47,6 +50,8 @@ Browser::Browser(QWidget *parent) :
         {
             settings.beginGroup("ticket");
             ticketWidth = settings.value("width", 0).toInt();
+            if(ticketWidth)
+                ui->print->show();
             settings.endGroup();
         }
 
@@ -56,9 +61,11 @@ Browser::Browser(QWidget *parent) :
             int size = settings.beginReadArray("allow");
             for (int i = 0; i < size; ++i) {
                 settings.setArrayIndex(i);
-                QString url = settings.value("url").toString();
-                qDebug("Domaine %s autorisé", qPrintable(url));
-                wuri->allow << url;
+                QString url = settings.value("url").toString().trimmed();
+                if(!url.isEmpty()) {
+                    qDebug("Domaine %s autorisé", qPrintable(url));
+                    wuri->allow << url;
+                }
             }
             settings.endArray();
         }
@@ -68,12 +75,25 @@ Browser::Browser(QWidget *parent) :
             int size = settings.beginReadArray("deny");
             for (int i = 0; i < size; ++i) {
                 settings.setArrayIndex(i);
-                QString url = settings.value("url").toString();
-                qDebug("Domaine %s bloqué", qPrintable(url));
-                wuri->deny << url;
+                QString url = settings.value("url").toString().trimmed();
+                if(!url.isEmpty()) {
+                    qDebug("Domaine %s bloqué", qPrintable(url));
+                    wuri->deny << url;
+                }
             }
             settings.endArray();
         }
+
+        //Barre
+        if(buttonBar == 0) {
+            ui->layout->removeItem(ui->toolbar);
+            ui->print->hide();
+            ui->back->hide();
+            ui->home->hide();
+            ui->url->hide();
+            ui->widget->layout()->setMargin(0);
+        }
+
     }
 
     //Moteur Web
@@ -110,7 +130,8 @@ void Browser::setUrl(QString url) {
     if(url.isEmpty())
         url = home;
     ui->web->load(url);
-    ui->web->page()->triggerAction(QWebEnginePage::ReloadAndBypassCache);
+    //ui->web->page()->triggerAction(QWebEnginePage::ReloadAndBypassCache);
+    eventEater->lastAction = QDateTime::currentDateTime();
 }
 
 void Browser::action() {
@@ -168,9 +189,12 @@ void Browser::incomingData(const QString &, quint16, const QString &, const QLis
 void Browser::timerEvent(QTimerEvent *) {
     if(eventEater->lastAction.secsTo(QDateTime::currentDateTime()) > eventEater->timeout) {
         if(ui->web->url().toString() != home) {
+            qDebug("%s != %s", qPrintable(ui->web->url().toString()), qPrintable(home));
             setUrl();
-            eventEater->lastAction = QDateTime::currentDateTime();
         }
+        else
+            qDebug("%s == %s", qPrintable(ui->web->url().toString()), qPrintable(home));
+        eventEater->lastAction = QDateTime::currentDateTime();
     }
 }
 
@@ -250,15 +274,18 @@ void WebUrlRequestInterceptor::interceptRequest(QWebEngineUrlRequestInfo &info) 
     foreach(const QString &url, allow)
         if(info.requestUrl().host().contains(url))
             block = false;
-    qDebug("%s (%d)", qPrintable(info.requestUrl().host()), block);
-    if(block)
+    if(block) {
         info.block(true);
+        if(info.resourceType() == 0)
+            MainWindowInterface::main->setUrl();
+    }
 }
 
 
 
 EventEater::EventEater(qint32 _timeout) {
     timeout = _timeout;
+    qDebug("Timeout %d", timeout);
 }
 bool EventEater::eventFilter(QObject *obj, QEvent *event) {
     bool resetTimeout = false;
@@ -272,7 +299,9 @@ bool EventEater::eventFilter(QObject *obj, QEvent *event) {
         resetTimeout = true;
     else if (event->type() == QEvent::TouchUpdate)
         resetTimeout = true;
-    if(resetTimeout)
+    if(resetTimeout) {
+        qDebug("-> %d (%d)", event->type(), resetTimeout);
         lastAction = QDateTime::currentDateTime();
+    }
     return QObject::eventFilter(obj, event);
 }

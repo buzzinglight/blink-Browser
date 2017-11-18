@@ -35,6 +35,7 @@ public:
     static MainWindowInterface *main;
     SenderInterface *udp;
     SenderInterface *http;
+    virtual void setUrl(QString url = "") = 0;
 };
 
 #endif // GLOBAL_H
