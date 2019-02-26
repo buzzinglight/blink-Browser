@@ -300,7 +300,7 @@ bool EventEater::eventFilter(QObject *obj, QEvent *event) {
     else if (event->type() == QEvent::TouchUpdate)
         resetTimeout = true;
     if(resetTimeout) {
-        qDebug("-> %d (%d)", event->type(), resetTimeout);
+        //qDebug("-> %d (%d)", event->type(), resetTimeout);
         lastAction = QDateTime::currentDateTime();
     }
     return QObject::eventFilter(obj, event);
